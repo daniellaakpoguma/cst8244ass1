@@ -39,63 +39,67 @@ void displayEventChoices() {
 
 // Function to map user input to an event code
 int getEventCode(const char *event) {
-    if (strcmp(event, LEFT_SCAN_EVT) == 0) return 1;
-    if (strcmp(event, GUARD_LEFT_UNLOCK_EVT) == 0) return 2;
-    if (strcmp(event, LEFT_OPEN_EVT) == 0) return 3;
-    if (strcmp(event, WEIGHT_EVT) == 0) return 4;
-    if (strcmp(event, LEFT_CLOSE_EVT) == 0) return 5;
-    if (strcmp(event, GUARD_LEFT_LOCK_EVT) == 0) return 6;
-    if (strcmp(event, GUARD_RIGHT_UNLOCK_EVT) == 0) return 7;
-    if (strcmp(event, RIGHT_OPEN_EVT) == 0) return 8;
-    if (strcmp(event, RIGHT_CLOSE_EVT) == 0) return 9;
-    if (strcmp(event, GUARD_RIGHT_LOCK_EVT) == 0) return 10;
-    if (strcmp(event, RIGHT_SCAN_EVT) == 0) return 11;
-    if (strcmp(event, EXIT_EVT) == 0) return 12;
+    if (strncmp(event, LEFT_SCAN_EVT, strlen(LEFT_SCAN_EVT)) == 0) return 0;
+    if (strcmp(event, GUARD_LEFT_UNLOCK_EVT), strlen(GUARD_LEFT_UNLOCK_EVT) == 0) return 1;
+    if (strcmp(event, LEFT_OPEN_EVT), strlen(LEFT_OPEN_EVT) == 0) return 2;
+    if (strcmp(event, WEIGHT_EVT), strlen(WEIGHT_EVT) == 0) return 3;
+    if (strcmp(event, LEFT_CLOSE_EVT), strlen(LEFT_CLOSE_EVT) == 0) return 4;
+    if (strcmp(event, GUARD_LEFT_LOCK_EVT), strlen(GUARD_LEFT_LOCK_EVT) == 0) return 5;
+    if (strcmp(event, GUARD_RIGHT_UNLOCK_EVT), strlen(GUARD_RIGHT_UNLOCK_EVT) == 0) return 6;
+    if (strcmp(event, RIGHT_OPEN_EVT), strlen(RIGHT_OPEN_EVT) == 0) return 7;
+    if (strcmp(event, RIGHT_CLOSE_EVT), strlen(RIGHT_CLOSE_EVT) == 0) return 8;
+    if (strcmp(event, GUARD_RIGHT_LOCK_EVT), strlen(GUARD_RIGHT_LOCK_EVT) == 0) return 9;
+    if (strcmp(event, RIGHT_SCAN_EVT), strlen(RIGHT_SCAN_EVT) == 0) return 10;
+    if (strcmp(event, EXIT_EVT), strlen(EXIT_EVT) == 0) return 11;
+    if (strcmp(event, LOCK_DOWN_EVT), strlen(LOCK_DOWN_EVT) == 0) return 12;
     return -1;  // Unknown event
 }
 
 // Function to handle each event based on the event code
 void handle_event(Person *p, int event_code) {
     switch (event_code) {
-        case 1:
+        case 0:
             p->state = LEFT_DOOR_SCAN_STATE;
             get_person_id(p);
             break;
-        case 2:
+        case 1:
             p->state = GUARD_LEFT_UNLOCK_STATE;
             break;
-        case 3:
+        case 2:
             p->state = LEFT_DOOR_OPEN_STATE;
             break;
-        case 4:
+        case 3:
             p->state = WEIGHT_CHECK_STATE;
             get_weight(p);
             break;
-        case 5:
+        case 4:
             p->state = LEFT_DOOR_CLOSE_STATE;
             break;
-        case 6:
+        case 5:
             p->state = GUARD_LEFT_LOCK_STATE;
             break;
-        case 7:
+        case 6:
             p->state = GUARD_RIGHT_UNLOCK_STATE;
             break;
-        case 8:
+        case 7:
             p->state = RIGHT_DOOR_OPEN_STATE;
             break;
-        case 9:
+        case 8:
             p->state = RIGHT_DOOR_CLOSE_STATE;
             break;
-        case 10:
+        case 9:
             p->state = GUARD_RIGHT_LOCK_STATE;
             break;
-        case 11:
+        case 10:
             p->state = RIGHT_DOOR_SCAN_STATE;
             get_person_id(p);
             break;
-        case 12:
+        case 11:
             p->state = SYSTEM_EXIT_STATE;
             break;
+        case 12:
+			p->state = LOCK_DOWN_EVT;
+			break;
         default:
             printf("Unknown event\n");
     }
@@ -118,6 +122,7 @@ int main(int argc, char *argv[]) {
     }
 
     p.state = INIT_STATE;
+    MsgSend(coid, &p, sizeof(p), &ctr, sizeof(ctr));
 
     while (1) {
         char usrInput[20];
