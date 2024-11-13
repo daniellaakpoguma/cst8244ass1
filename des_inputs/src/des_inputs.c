@@ -21,25 +21,6 @@ void get_weight(Person *p) {
 }
 
 
-//// Function to map user input to an event code
-//int getEventCode(const char *event) {
-//    if (strncmp(event, LEFT_SCAN_EVT, strlen(LEFT_SCAN_EVT)) == 0) return 0;
-//    if (strcmp(event, GUARD_LEFT_UNLOCK_EVT), strlen(GUARD_LEFT_UNLOCK_EVT) == 0) return 1;
-//    if (strcmp(event, LEFT_OPEN_EVT), strlen(LEFT_OPEN_EVT) == 0) return 2;
-//    if (strcmp(event, WEIGHT_EVT), strlen(WEIGHT_EVT) == 0) return 3;
-//    if (strcmp(event, LEFT_CLOSE_EVT), strlen(LEFT_CLOSE_EVT) == 0) return 4;
-//    if (strcmp(event, GUARD_LEFT_LOCK_EVT), strlen(GUARD_LEFT_LOCK_EVT) == 0) return 5;
-//    if (strcmp(event, GUARD_RIGHT_UNLOCK_EVT), strlen(GUARD_RIGHT_UNLOCK_EVT) == 0) return 6;
-//    if (strcmp(event, RIGHT_OPEN_EVT), strlen(RIGHT_OPEN_EVT) == 0) return 7;
-//    if (strcmp(event, RIGHT_CLOSE_EVT), strlen(RIGHT_CLOSE_EVT) == 0) return 8;
-//    if (strcmp(event, GUARD_RIGHT_LOCK_EVT), strlen(GUARD_RIGHT_LOCK_EVT) == 0) return 9;
-//    if (strcmp(event, RIGHT_SCAN_EVT), strlen(RIGHT_SCAN_EVT) == 0) return 10;
-//    if (strcmp(event, EXIT_EVT), strlen(EXIT_EVT) == 0) return 11;
-//    if (strcmp(event, LOCK_DOWN_EVT), strlen(LOCK_DOWN_EVT) == 0) return 12;
-//    return -1;  // Unknown event
-// }
-
-
 int main(int argc, char *argv[]) {
     Person p;
     Display ctr;
@@ -106,16 +87,12 @@ int main(int argc, char *argv[]) {
         }
 
         // Check and display the controller's response
-        if (ctr.message_index < 0 || ctr.message_index >= NUM_OUTPUTS) {
-            printf("Error: Invalid response from controller\n");
-        } else {
-            printf("Controller response: %s\n", outMessage[ctr.message_index]);
-        }
+//        if (ctr.message_index < 0 || ctr.message_index >= NUM_OUTPUTS) {
+//            printf("Error: Invalid response from controller\n");
+//        } else {
+//            printf("Controller response: %s\n", outMessage[ctr.message_index]);
+//        }
 
-        // If exit event is selected, break the loop
-        if (p.state == SYSTEM_EXIT_STATE) {
-            break;
-        }
     }
 
     // Detach from the connection and exit

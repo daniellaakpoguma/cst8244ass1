@@ -37,8 +37,7 @@ State handler_init(Input event, State current_state) {
 	if (event == LEFT_SCAN_EVT || event == RIGHT_SCAN_EVT) {
 		return WAIT_SCAN_STATE;
 	}
-	// If no condition is met, remain in the current state
-	return current_state;
+	return current_state; // If no condition is met, remain in the current state
 }
 
 State handler_wait_scan() {
