@@ -20,22 +20,6 @@ void get_weight(Person *p) {
     scanf("%d", &p->weight);
 }
 
-// Function to display available event choices to the user
-void displayEventChoices() {
-    printf("Select an event from the following list:\n");
-    printf("\t%s = Left Scan\n", LEFT_SCAN_EVT);
-    printf("\t%s = Right Scan\n", RIGHT_SCAN_EVT);
-    printf("\t%s = Weight Scale\n", WEIGHT_EVT);
-    printf("\t%s = Left Door Open\n", LEFT_OPEN_EVT);
-    printf("\t%s = Right Door Open\n", RIGHT_OPEN_EVT);
-    printf("\t%s = Left Door Close\n", LEFT_CLOSE_EVT);
-    printf("\t%s = Right Door Close\n", RIGHT_CLOSE_EVT);
-    printf("\t%s = Guard Right Unlock\n", GUARD_RIGHT_UNLOCK_EVT);
-    printf("\t%s = Guard Right Lock\n", GUARD_RIGHT_LOCK_EVT);
-    printf("\t%s = Guard Left Lock\n", GUARD_LEFT_LOCK_EVT);
-    printf("\t%s = Guard Left Unlock\n", GUARD_LEFT_UNLOCK_EVT);
-    printf("\t%s = Exit\n", EXIT_EVT);
-}
 
 //// Function to map user input to an event code
 //int getEventCode(const char *event) {
@@ -53,62 +37,13 @@ void displayEventChoices() {
 //    if (strcmp(event, EXIT_EVT), strlen(EXIT_EVT) == 0) return 11;
 //    if (strcmp(event, LOCK_DOWN_EVT), strlen(LOCK_DOWN_EVT) == 0) return 12;
 //    return -1;  // Unknown event
-}
+// }
 
-
-// Function to handle each event based on the event code
-//void handle_event(Person *p, int event_code) {
-//    switch (event_code) {
-//        case 0:
-//            p->state = LEFT_DOOR_SCAN_STATE;
-//            get_person_id(p);
-//            break;
-//        case 1:
-//            p->state = GUARD_LEFT_UNLOCK_STATE;
-//            break;
-//        case 2:
-//            p->state = LEFT_DOOR_OPEN_STATE;
-//            break;
-//        case 3:
-//            p->state = WEIGHT_CHECK_STATE;
-//            get_weight(p);
-//            break;
-//        case 4:
-//            p->state = LEFT_DOOR_CLOSE_STATE;
-//            break;
-//        case 5:
-//            p->state = GUARD_LEFT_LOCK_STATE;
-//            break;
-//        case 6:
-//            p->state = GUARD_RIGHT_UNLOCK_STATE;
-//            break;
-//        case 7:
-//            p->state = RIGHT_DOOR_OPEN_STATE;
-//            break;
-//        case 8:
-//            p->state = RIGHT_DOOR_CLOSE_STATE;
-//            break;
-//        case 9:
-//            p->state = GUARD_RIGHT_LOCK_STATE;
-//            break;
-//        case 10:
-//            p->state = RIGHT_DOOR_SCAN_STATE;
-//            get_person_id(p);
-//            break;
-//        case 11:
-//            p->state = SYSTEM_EXIT_STATE;
-//            break;
-//        case 12:
-//			p->state = LOCK_DOWN_EVT;
-//			break;
-//        default:
-//            printf("Unknown event\n");
-//    }
-//}
 
 int main(int argc, char *argv[]) {
     Person p;
     Display ctr;
+    Input input_code;
 
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <server_pid>\n", argv[0]);
@@ -129,14 +64,39 @@ int main(int argc, char *argv[]) {
         char usrInput[20];
 
         // Display available event choices
-        displayEventChoices();
+        printf("Enter the event type (ls=left scan, rs=right scan, ws=weight scale, lo=left open, "
+                       "ro=right open, lc=left closed, rc=right closed, gru=guard right unlock, "
+                       "grl=guard right lock, gll=guard left lock, glu=guard left unlock): ");
+        scanf("%s", usrInput);
 
-        // Get user input
-        getUserInput(usrInput);
 
-        // Convert user input to an event code and handle the event
-//        int event_code = getEventCode(usrInput);
-//        handle_event(&p, event_code);
+        // Convert user input to an event code
+		if (strcmp(userInput, "ls") == 0)
+			p.event = LEFT_SCAN_EVT;
+		if (strcmp(userInput, "ws") == 0)
+			p.event =  WEIGHT_CHECK_EVT;
+		if (strcmp(userInput, "lo") == 0)
+			p.event = LEFT_DOOR_OPEN_EVT;
+		if (strcmp(userInput, "lc") == 0)
+			p.event = LEFT_DOOR_CLOSE_EVT;
+		if (strcmp(userInput, "glu") == 0)
+			p.event = GUARD_LEFT_UNLOCK_EVT;
+		if (strcmp(userInput, "gll") == 0)
+			p.event =  GUARD_LEFT_LOCK_EVT;
+		if (strcmp(userInput, "gru") == 0)
+			p.event =  GUARD_RIGHT_UNLOCK_EVT;
+		if (strcmp(userInput, "grl") == 0)
+			p.event =  GUARD_RIGHT_LOCK_EVT;
+		if (strcmp(userInput, "rs") == 0)
+			p.event =  RIGHT_SCAN_EVT;
+		if (strcmp(userInput, "ro") == 0)
+			p.event =  RIGHT_DOOR_OPEN_EVT;
+		if (strcmp(userInput, "rc") == 0)
+			p.event =  RIGHT_DOOR_CLOSE_EVT;
+		if (strcmp(userInput, "exit") == 0)
+			p.event =  EXIT_EVT;
+		if (strcmp(userInput, "lock") == 0)
+			p.event = LOCK_DOWN_EVT;
 
         // Send the updated Person struct to the controller
         if (MsgSend(coid, &p, sizeof(p), &ctr, sizeof(ctr)) == -1) {

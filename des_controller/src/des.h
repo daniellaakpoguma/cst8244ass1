@@ -29,7 +29,7 @@
 
 typedef enum {
     INIT_STATE = 0,           // Initializing state
-	WAIT_SCAN_STATE = 1,	  // Person id waiting to be scannerd
+	WAIT_SCAN_STATE = 1,	  // Person id waiting to be scanned
     DOOR_SCAN_STATE = 3,      // Person id scanned door state
     DOOR_UNLOCKED_STATE = 4,  // Guard unlock door state
     DOOR_OPEN_STATE = 5,      // Door open state
@@ -73,6 +73,7 @@ typedef enum {
     LOCK_DOWN_EVT = 12,        // Lock-down event
 } Input;
 
+// maybe change this to the ls, ws thing
 const char *inMessage[NUM_INPUTS] = {
     "Left Scan",
     "Guard Left Unlock",
@@ -127,7 +128,7 @@ typedef struct {
     int person_id;     // Person's unique ID
     int weight;        // Person's weight
     int state;         // Person's current state
-    int direction;     // Direction: inbound or outbound (e.g., 0 = inbound, 1 = outbound) // we may not use this
+    Input event;
 } Person;
 
 // Display struct for storing output messages and the associated person
