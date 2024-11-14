@@ -11,6 +11,7 @@
 void current_state(Display ctr);
 
 int main(void) {
+
     int chid, rcvid;
     Display ctr;
     Person p;
@@ -71,7 +72,6 @@ void current_state(Display ctr) {
         case DOOR_OPEN_STATE:
             printf("Door opened.\n");
             break;
-
         case WEIGHT_CHECK_STATE:
             printf("Checking weight: %d kg\n", ctr.person.weight);
             break;

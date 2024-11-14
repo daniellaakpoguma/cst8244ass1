@@ -11,16 +11,18 @@
 typedef State (*StateHandler)(Person *p, State current_state);
 
 
+
+
 // State handler functions
 State handler_init();
 State handler_door_scan();
 State handler_door_unlocked();
 State handler_door_open();
-State handler_weight_check();
 State handler_door_close();
 State handler_door_locked();
 State handler_system_exit();
 // State handler_lockdown();
+
 
 
 StateHandler state_handlers[] = {
@@ -94,7 +96,6 @@ State handler_door_locked(Person *p, State current_state) {
 State handler_system_exit(Person *p, State current_state) {
 	//  When an exit condition is met, the state handler should
 	// return the function pointer for the next state handler
-	exit(0);
 }
 
 int main(int argc, char *argv[]) {
@@ -117,6 +118,7 @@ int main(int argc, char *argv[]) {
 		perror("failed to create the channel.");
 		exit(EXIT_FAILURE);
 	}
+
 
 	// --- Phase II
 	while (1) {
@@ -162,6 +164,7 @@ int main(int argc, char *argv[]) {
 
 			// send message to display
 			// check for exit condition
+			// state. When an exit condition is met, the state handler should return the function pointer for the next state handler
 
 			// now, prepare the reply.  We reuse "message"
 			strcpy((char*) &person, "This is the reply");

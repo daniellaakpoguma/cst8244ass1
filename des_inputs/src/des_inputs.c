@@ -24,6 +24,10 @@ void get_weight(Person *p) {
 int main(int argc, char *argv[]) {
     Person p;
     Display ctr;
+<<<<<<< HEAD
+=======
+    Input input_code;
+>>>>>>> 2500fc1a55189125c401f1093bdd36f813620f58
 
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <server_pid>\n", argv[0]);
@@ -47,6 +51,7 @@ int main(int argc, char *argv[]) {
         printf("Enter the event type (ls=left scan, rs=right scan, ws=weight scale, lo=left open, "
                        "ro=right open, lc=left closed, rc=right closed, gru=guard right unlock, "
                        "grl=guard right lock, gll=guard left lock, glu=guard left unlock): ");
+
         scanf("%s", userInput);
 
         // Convert user input to an event code
@@ -79,6 +84,7 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(userInput, "lock") == 0) {
             p.event = LOCK_DOWN_EVT;
         }
+
 
         // Send the updated Person struct to the controller
         if (MsgSend(coid, &p, sizeof(p), &ctr, sizeof(ctr)) == -1) {
