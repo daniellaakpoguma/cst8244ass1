@@ -5,12 +5,14 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/neutrino.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "des.h"
 
 // Forward declarations for state handler functions
 typedef State (*StateHandler)(Person *p, State current_state);
-
-
 
 
 // State handler functions
@@ -22,8 +24,6 @@ State handler_door_close();
 State handler_door_locked();
 State handler_system_exit();
 // State handler_lockdown();
-
-
 
 StateHandler state_handlers[] = {
 		handler_init,
@@ -98,7 +98,38 @@ State handler_system_exit(Person *p, State current_state) {
 	// return the function pointer for the next state handler
 }
 
+
+int create_shared_memory(size_t size, Person **addr) {
+    // Create a new shared memory object (file descriptor)
+    int fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0666);  // 0666 gives read/write permissions to all
+    if (fd == -1) {
+        perror("shm_open failed");
+        return EXIT_FAILURE;
+    }
+
+    // Set the size of the shared memory object
+    if (ftruncate(fd, size) == -1) {
+        perror("ftruncate failed");
+        close(fd);
+        return EXIT_FAILURE;
+    }
+
+    // Map the shared memory to process's address space
+    *addr = (Person *)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (*addr == MAP_FAILED) {
+        perror("mmap failed");
+        close(fd);
+        return EXIT_FAILURE;
+    }
+
+    // Close the file descriptor as it is no longer needed after mapping
+    close(fd);
+
+    return EXIT_SUCCESS;
+}
+
 int main(int argc, char *argv[]) {
+
 	// Check the number of command-line arguments
 	if (argc != 2) {
 		fprintf(stderr, "Missing PID to display\n");
@@ -107,6 +138,15 @@ int main(int argc, char *argv[]) {
 
 	// Print process ID
 	printf("Process ID: %d\n", getpid());
+
+    size_t shm_size = sizeof(Person) * 100;
+    Person *shared_memory = NULL;
+
+    // Create shared memory and map it to the process address space
+    if (create_shared_memory(shm_size, &shared_memory) == EXIT_FAILURE) {
+        fprintf(stderr, "Failed to create shared memory\n");
+        return EXIT_FAILURE;
+    }
 
 	int rcvid;        // indicates who we should reply to
 	int chid;         // the channel ID
@@ -165,6 +205,9 @@ int main(int argc, char *argv[]) {
 			// send message to display
 			// check for exit condition
 			// state. When an exit condition is met, the state handler should return the function pointer for the next state handler
+
+			 // After usage, unmap shared memory and clean up
+			 // munmap(shared_memory, shm_size);
 
 			// now, prepare the reply.  We reuse "message"
 			strcpy((char*) &person, "This is the reply");

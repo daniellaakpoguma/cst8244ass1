@@ -8,9 +8,10 @@
 #ifndef DES_H_
 #define DES_H_
 
+#define SHM_NAME "/person_db"  // Shared memory object name
 #define NUM_STATES 11 // Number of states in FSM
 
-<<<<<<< HEAD
+
 typedef enum {
     INIT_STATE = 0,           // Initializing state
     DOOR_SCAN_STATE = 1,      // Person id scanned door state
@@ -22,54 +23,6 @@ typedef enum {
 	SYSTEM_EXIT_STATE = 7,   // Exit state
 	LOCK_DOWN_STATE = 8, 	// Lock-down state
 } State;
-
-
-=======
-//typedef enum {
-//    INIT_STATE = 0,                // Initializing state
-//    LEFT_DOOR_SCAN_STATE = 1,      // Left door scan state
-//    GUARD_LEFT_UNLOCK_STATE = 2,   // Guard left unlock state
-//    LEFT_DOOR_OPEN_STATE = 3,      // Left door open state
-//    WEIGHT_CHECK_STATE = 4,        // Weight check state
-//    LEFT_DOOR_CLOSE_STATE = 5,     // Left door close state
-//    GUARD_LEFT_LOCK_STATE = 6,     // Guard left lock state
-//    GUARD_RIGHT_UNLOCK_STATE = 7,  // Guard right unlock state
-//    RIGHT_DOOR_OPEN_STATE = 8,     // Right door open state
-//    RIGHT_DOOR_CLOSE_STATE = 9,    // Right door close state
-//    GUARD_RIGHT_LOCK_STATE = 10,   // Guard right lock state
-//    RIGHT_DOOR_SCAN_STATE = 11,    // Right door scan state
-//    LOCK_DOWN_STATE = 12,          // Lock-down state
-//    SYSTEM_EXIT_STATE = 13,        // Exit state
-//} State;
-
-typedef enum {
-    INIT_STATE = 0,           // Initializing state
-	WAIT_SCAN_STATE = 1,	  // Person id waiting to be scanned
-    DOOR_SCAN_STATE = 3,      // Person id scanned door state
-    DOOR_UNLOCKED_STATE = 4,  // Guard unlock door state
-    DOOR_OPEN_STATE = 5,      // Door open state
-    WAIT_WEIGHT_STATE = 6,    // Person weight wiating to be scanned
-	WEIGHT_CHECK_STATE = 7,   // Weight check state
-    DOOR_CLOSE_STATE = 8,     // Door closed state
-    DOOR_LOCKED_STATE = 9,    // Guard lock door state
-	SYSTEM_EXIT_STATE = 10,   // Exit state
-} State;
-
-
-// Define an enumeration for the event types
-//typedef enum {
-//    ls,     // Left scan event
-//    rs,     // Right scan event
-//    ws,     // Weight scale event
-//    lo,     // Left open event
-//    ro,     // Right open event
-//    lc,     // Left closed event
-//    rc,     // Right closed event
-//    gru,    // Guard unlock right event
-//    grl,    // Guard lock right event
-//    glu,    // Guard unlock left event
-//    gll,     // Guard lock left event
-//} EventType;
 
 
 #define NUM_INPUTS 13 // Number of input commands
