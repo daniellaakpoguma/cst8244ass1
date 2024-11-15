@@ -1,68 +1,63 @@
- #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/neutrino.h>
-#include <sys/netmgr.h>
-#include <string.h>
 #include <unistd.h>
 #include "../../des_controller/src/des.h"
 
 // Function to display the current state
-void current_state(Display ctr);
+void display_state(Display ctr);
 
 int main(void) {
+    int chid, rcvid;  // Channel ID and Receive ID
+    Display msg;      // Struct to receive messages
 
-    int chid, rcvid;
-    Display ctr;
-    Person p;
-
+    // Phase I: Create the channel
     if ((chid = ChannelCreate(0)) == -1) {
-        printf("Channel creation failed.\n");
-        exit(EXIT_FAILURE);
+        perror("Channel creation failed");
+        return EXIT_FAILURE;
     }
 
-    printf("The display is running as process_id %d\n", getpid());
+    printf("Display is running as process ID %d\n", getpid());
 
+    // Phase II: Message handling loop
     while (1) {
-        // Receive message from the controller (it contains Person data)
-        if ((rcvid = MsgReceive(chid, &p, sizeof(p), NULL)) == -1) {
-            printf("Message receive failed: %s\n", strerror(errno));
-            exit(EXIT_FAILURE);
+        // Receive a message from the controller
+        rcvid = MsgReceive(chid, &msg, sizeof(msg), NULL);
+        if (rcvid == -1) {
+            perror("Message receive failed");
+            ChannelDestroy(chid);  // Clean up before exiting
+            return EXIT_FAILURE;
         }
 
-        // Call the function to display the current state based on the received Person data
-        current_state(ctr);
+        // Display the current state based on the received data
+        display_state(msg);
 
-        // Set the status code for the reply
-        ctr.message_index = EOK;  // assuming a successful state transition
-
-        // If the state is not EXIT_STATE, reply to the message
-        if (p.state != SYSTEM_EXIT_STATE) {
-            if (MsgReply(rcvid, EOK, &ctr, sizeof(ctr)) == -1) {
-                printf("Error while replying to message: %s\n", strerror(errno));
-            }
+        // Reply to the message
+        if (MsgReply(rcvid, EOK, NULL, 0) == -1) {
+            perror("Message reply failed");
         }
 
-        // If the state is SYSTEM_EXIT_STATE, break out of the loop
-        if (p.state == SYSTEM_EXIT_STATE) {
+        // Exit the loop if the system is shutting down
+        if (msg.person.state == SYSTEM_EXIT_STATE) {
             break;
         }
     }
 
-    // Clean up the channel before exiting
+    // Phase III: Clean up the channel
     ChannelDestroy(chid);
     return EXIT_SUCCESS;
 }
 
-// Function to display the current state based on the state of the person
-void current_state(Display ctr) {
+// Function to display the state of the system
+void display_state(Display ctr) {
     switch (ctr.person.state) {
         case INIT_STATE:
             printf("System Initializing...\n");
             break;
 
         case DOOR_SCAN_STATE:
-            printf("Person ID scanned, proceeding to door scan...\n");
+            printf("Person ID scanned: %d\n", ctr.person.person_id);
             break;
 
         case DOOR_UNLOCKED_STATE:
@@ -72,8 +67,9 @@ void current_state(Display ctr) {
         case DOOR_OPEN_STATE:
             printf("Door opened.\n");
             break;
+
         case WEIGHT_CHECK_STATE:
-            printf("Checking weight: %d kg\n", ctr.person.weight);
+            printf("Person ID: %d, Weight: %d kg\n", ctr.person.person_id, ctr.person.weight);
             break;
 
         case DOOR_CLOSE_STATE:
@@ -85,7 +81,11 @@ void current_state(Display ctr) {
             break;
 
         case SYSTEM_EXIT_STATE:
-            printf("Exiting system...\n");
+            printf("System exiting...\n");
+            break;
+
+        case LOCK_DOWN_STATE:
+            printf("System in lockdown.\n");
             break;
 
         default:
@@ -93,5 +93,3 @@ void current_state(Display ctr) {
             break;
     }
 }
-
-
