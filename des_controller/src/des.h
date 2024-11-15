@@ -8,8 +8,7 @@
 #ifndef DES_H_
 #define DES_H_
 
-#define SHM_NAME "/person_db"  // Shared memory object name
-#define NUM_STATES 11 // Number of states in FSM
+#define NUM_STATES 9 // Number of states in FSM
 
 
 typedef enum {
@@ -106,5 +105,6 @@ typedef struct {
     Person person;     // Person's information
 } Display;
 
+void current_state(Display ctr);
 
 #endif  /* DES_H_ */

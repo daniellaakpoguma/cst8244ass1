@@ -1,4 +1,4 @@
-#include <stdio.h>
+ #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/neutrino.h>
@@ -21,7 +21,7 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Display PID = %d\n", getpid());
+    printf("The display is running as process_id %d\n", getpid());
 
     while (1) {
         // Receive message from the controller (it contains Person data)
@@ -93,3 +93,5 @@ void current_state(Display ctr) {
             break;
     }
 }
+
+

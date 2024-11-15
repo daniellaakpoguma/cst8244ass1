@@ -4,6 +4,17 @@
 #include <unistd.h>
 #include <sys/neutrino.h>
 #include <sys/netmgr.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <process.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/neutrino.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "../../des_controller/src/des.h"
 
 // Function to get the person's ID
@@ -36,49 +47,35 @@ int main(int argc, char *argv[]) {
     if (coid == -1) {
         perror("ERROR: ConnectAttach\n");
         return EXIT_FAILURE;
+    }else{
+    	printf("Succesfully conencted to controller");
     }
 
-    size_t shm_size = sizeof(Person) * 100;  // Adjust the number of Person objects as needed
-    Person *shared_memory = NULL;
-
-    // Open the shared memory region and map it to the address space
-    int fd = shm_open(SHM_NAME, O_RDWR, 0666);  // Open the existing shared memory
-    if (fd == -1) {
-        perror("shm_open failed");
-        return EXIT_FAILURE;
-    }
-
-    // Map the shared memory to the process's address space
-    shared_memory = (Person *)mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (shared_memory == MAP_FAILED) {
-        perror("mmap failed");
-        close(fd);
-        return EXIT_FAILURE;
-    }
-
-    // Close the file descriptor as it is no longer needed after mapping
-    close(fd);
-
+    p.person_id = 0; // Initialize person ID to 0
+    p.weight = 0;    // Initialize weight to 0
+    p.event = 0;     // Initialize event to 0
     p.state = INIT_STATE;
-    MsgSend(coid, &p, sizeof(p), &ctr, sizeof(ctr));
+
 
     while (1) {
         char userInput[20];
 
+        printf("In des inputs");
         // Display available event choices
         printf("Enter the event type (ls=left scan, rs=right scan, ws=weight scale, lo=left open, "
                        "ro=right open, lc=left closed, rc=right closed, gru=guard right unlock, "
                        "grl=guard right lock, gll=guard left lock, glu=guard left unlock): ");
-
         scanf("%s", userInput);
 
         // Convert user input to an event code
         if (strcmp(userInput, "ls") == 0) {
             p.event = LEFT_SCAN_EVT;
-            get_person_id(&shared_memory[0]);  //  prompt for the person id
+            get_person_id(&p);
+            printf("Event: %d\n", p.event);
+            printf("State: %d\n", p.state);
         } else if (strcmp(userInput, "ws") == 0) {
             p.event = WEIGHT_CHECK_EVT;
-            get_weight(&shared_memory[0]);  // prompt for the weight
+            get_weight(&p);  // prompt for the weight
         } else if (strcmp(userInput, "lo") == 0) {
             p.event = LEFT_DOOR_OPEN_EVT;
         } else if (strcmp(userInput, "lc") == 0) {
@@ -117,9 +114,6 @@ int main(int argc, char *argv[]) {
 //        } else {
 //            printf("Controller response: %s\n", outMessage[ctr.message_index]);
 //        }
-
-        // After usage, unmap shared memory and clean up
-        // munmap(shared_memory, shm_size);
 
     }
 
