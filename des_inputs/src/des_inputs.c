@@ -66,6 +66,7 @@ int main(int argc, char *argv[]) {
         printf("Enter the event type (ls=left scan, rs=right scan, ws=weight scale, lo=left open, "
                        "ro=right open, lc=left closed, rc=right closed, gru=guard right unlock, "
                        "grl=guard right lock, gll=guard left lock, glu=guard left unlock): ");
+        fflush(stdout);
         scanf("%s", userInput);
 
 //        // Convert user input to an event code
@@ -74,6 +75,7 @@ int main(int argc, char *argv[]) {
             get_person_id(&request.person);
             printf("Event: %d\n", request.person.event);
             printf("State: %d\n", request.person.state);
+            fflush(stdout);
         } else if (strcmp(userInput, "ws") == 0) {
         	request.person.event = WEIGHT_CHECK_EVT;
             get_weight(&request.person);  // prompt for the weight
@@ -97,8 +99,8 @@ int main(int argc, char *argv[]) {
         	request.person.event = RIGHT_DOOR_CLOSE_EVT;
         } else if (strcmp(userInput, "exit") == 0) {
         	request.person.event = EXIT_EVT;
-              printf("Exiting...\n");
-              break;
+            printf("Exiting...\n");
+            break;
         } else if (strcmp(userInput, "lock") == 0) {
         	request.person.event = LOCK_DOWN_EVT;
         }
@@ -113,6 +115,8 @@ int main(int argc, char *argv[]) {
 
     	// Receive Reply
         printf("Reply received: ID=%d, Event=%d, State=%d\n", response.person.person_id, response.person.event, response.person.state);
+        printf("After receiving response, prompting again...\n");
+        fflush(stdout);
 
     }
 

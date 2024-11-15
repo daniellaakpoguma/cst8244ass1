@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
 	while (1) {
 
 		// receive inputs from des_input containing data and the status
-		printf("Waiting for messages on channel ID: %d...\n", chid);
+		// printf("Waiting for messages on channel ID: %d...\n", chid);
 //		rcvid = MsgReceive(chid, &person, sizeof(Person), NULL);
 //		if (rcvid == -1) {
 //		    perror("MsgReceive failed");
