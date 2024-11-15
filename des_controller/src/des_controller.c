@@ -49,15 +49,15 @@ int check_person_in_db(int person_id) {
 State handler_init(Person *p, State current_state) {
 	// Check if the event is a scan event (LEFT_SCAN_EVT or RIGHT_SCAN_EVT)
 	if (p->event == LEFT_SCAN_EVT || p->event == RIGHT_SCAN_EVT) {
-		// Check if the person ID exists in the database
-		int index = check_person_in_db(p->person_id);
-		if (index == -1) {
-			// Transition to lock-down state if person ID is not found
-			// printf("Person ID not found. Entering lock-down state.\n");
-			return LOCK_DOWN_STATE;
-		} else {
+//		// Check if the person ID exists in the database
+//		int index = check_person_in_db(p->person_id);
+//		if (index == -1) {
+//			// Transition to lock-down state if person ID is not found
+//			// printf("Person ID not found. Entering lock-down state.\n");
+//			return LOCK_DOWN_STATE;
+//		} else {
 			return DOOR_SCAN_STATE;
-		}
+		//}
 	}
 	return current_state; // If no condition is met, remain in the current state
 }
@@ -176,6 +176,7 @@ int main(int argc, char *argv[]) {
 			case INIT_STATE:
 				person.state = state_handlers[INIT_STATE](&person,
 						person.state);
+				 printf("State: %d\n", person.state);
 				break;
 			case DOOR_SCAN_STATE:
 				person.state = state_handlers[DOOR_SCAN_STATE](&person,
@@ -215,8 +216,12 @@ int main(int argc, char *argv[]) {
 
 
 			// now, prepare the reply.  We reuse "message"
-			strcpy((char*) &person, "This is the reply");
-			MsgReply(rcvid, EOK, &person, sizeof(Person));
+			if (MsgReply(rcvid, EOK, &person, sizeof(person)) == -1) {
+			    perror("MsgReply failed");
+			    printf("Error code: %d\n", errno);  // Print the error code
+			    printf("rcvid: %d\n", rcvid);      // Check if rcvid is valid
+			    exit(1);
+			}
 		}
 	}
 

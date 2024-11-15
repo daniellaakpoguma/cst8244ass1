@@ -108,6 +108,12 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
+        // Receive the reply from des_controller
+        if (MsgReceive(coid, &p, sizeof(p), NULL) == -1) {
+            perror("MsgReceive failed");
+            exit(1);
+         }
+
         // Check and display the controller's response
 //        if (ctr.message_index < 0 || ctr.message_index >= NUM_OUTPUTS) {
 //            printf("Error: Invalid response from controller\n");
