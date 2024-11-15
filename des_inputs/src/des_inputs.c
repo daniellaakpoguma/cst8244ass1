@@ -55,12 +55,11 @@ int main(int argc, char *argv[]) {
     p.weight = 0;    // Initialize weight to 0
     p.event = 0;     // Initialize event to 0
     p.state = INIT_STATE;
+    char userInput[20];
 
 
     while (1) {
-        char userInput[20];
 
-        printf("In des inputs");
         // Display available event choices
         printf("Enter the event type (ls=left scan, rs=right scan, ws=weight scale, lo=left open, "
                        "ro=right open, lc=left closed, rc=right closed, gru=guard right unlock, "
@@ -95,32 +94,25 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(userInput, "rc") == 0) {
             p.event = RIGHT_DOOR_CLOSE_EVT;
         } else if (strcmp(userInput, "exit") == 0) {
-            p.event = EXIT_EVT;
+              p.event = EXIT_EVT;
+              printf("Exiting...\n");
+              break;
         } else if (strcmp(userInput, "lock") == 0) {
             p.event = LOCK_DOWN_EVT;
         }
 
-
         // Send the updated Person struct to the controller
         if (MsgSend(coid, &p, sizeof(p), &ctr, sizeof(ctr)) == -1) {
-            perror("ERROR: MsgSend\n");
+            perror("ERROR: MsgSend failed");
+            printf("Person struct details: ID=%d, Event=%d, State=%d\n", p.person_id, p.event, p.state);
             ConnectDetach(coid);
-            return EXIT_FAILURE;
+        } else {
+            printf("Message sent successfully. Event: %d, State: %d\n", p.event, p.state);
         }
 
-        // Receive the reply from des_controller
-        if (MsgReceive(coid, &p, sizeof(p), NULL) == -1) {
-            perror("MsgReceive failed");
-            exit(1);
-         }
 
+        printf("Reply received: ID=%d, Event=%d, State=%d\n", p.person_id, p.event, p.state);
         // Check and display the controller's response
-//        if (ctr.message_index < 0 || ctr.message_index >= NUM_OUTPUTS) {
-//            printf("Error: Invalid response from controller\n");
-//        } else {
-//            printf("Controller response: %s\n", outMessage[ctr.message_index]);
-//        }
-
     }
 
     // Detach from the connection and exit
