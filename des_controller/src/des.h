@@ -105,6 +105,19 @@ typedef struct {
     Person person;     // Person's information
 } Display;
 
+
+typedef struct {
+    Person person;  // The person data that is sent from the client
+    // int request_type;  // Additional field (e.g., request type identifier)
+} client_send_t;
+
+typedef struct {
+    Person person;  // The person data that is sent from the server
+    int status_code;  // Status code to indicate success or error
+    //char message[128];  // Optional message or error description
+} server_response_t;
+
+
 void current_state(Display ctr);
 
 #endif  /* DES_H_ */

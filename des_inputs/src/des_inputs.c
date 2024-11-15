@@ -51,10 +51,13 @@ int main(int argc, char *argv[]) {
     	printf("Succesfully conencted to controller");
     }
 
-    p.person_id = 0; // Initialize person ID to 0
-    p.weight = 0;    // Initialize weight to 0
-    p.event = 0;     // Initialize event to 0
-    p.state = INIT_STATE;
+    client_send_t request;
+    server_response_t response;
+    request.person.person_id = 0;
+    request.person.weight = 0;
+	request.person.event = 0;
+	request.person.state = INIT_STATE;
+
     char userInput[20];
 
 
@@ -66,7 +69,7 @@ int main(int argc, char *argv[]) {
                        "grl=guard right lock, gll=guard left lock, glu=guard left unlock): ");
         scanf("%s", userInput);
 
-        // Convert user input to an event code
+//        // Convert user input to an event code
         if (strcmp(userInput, "ls") == 0) {
             p.event = LEFT_SCAN_EVT;
             get_person_id(&p);
@@ -102,17 +105,21 @@ int main(int argc, char *argv[]) {
         }
 
         // Send the updated Person struct to the controller
-        if (MsgSend(coid, &p, sizeof(p), &ctr, sizeof(ctr)) == -1) {
-            perror("ERROR: MsgSend failed");
-            printf("Person struct details: ID=%d, Event=%d, State=%d\n", p.person_id, p.event, p.state);
+        if (MsgSend(coid, &request, sizeof(request), &response, sizeof(response)) == -1)
+        {
+            perror("Error during MsgSend");
             ConnectDetach(coid);
-        } else {
-            printf("Message sent successfully. Event: %d, State: %d\n", p.event, p.state);
+            return EXIT_FAILURE;
         }
 
+    	// Receive Reply
+        printf("Reply received: ID=%d, Event=%d, State=%d\n", response.person.person_id, response.person.event, response.person.state);
 
-        printf("Reply received: ID=%d, Event=%d, State=%d\n", p.person_id, p.event, p.state);
+
+        //printf("Reply received: ID=%d, Event=%d, State=%d\n", p.person_id, p.event, p.state);
         // Check and display the controller's response
+
+
     }
 
     // Detach from the connection and exit

@@ -13,39 +13,39 @@ int main(void) {
     Display msg;      // Struct to receive messages
 
     // Phase I: Create the channel
-    if ((chid = ChannelCreate(0)) == -1) {
-        perror("Channel creation failed");
-        return EXIT_FAILURE;
-    }
+//    if ((chid = ChannelCreate(0)) == -1) {
+//        perror("Channel creation failed");
+//        return EXIT_FAILURE;
+//    }
 
     printf("Display is running as process ID %d\n", getpid());
 
     // Phase II: Message handling loop
     while (1) {
         // Receive a message from the controller
-        rcvid = MsgReceive(chid, &msg, sizeof(msg), NULL);
-        if (rcvid == -1) {
-            perror("Message receive failed");
-            ChannelDestroy(chid);  // Clean up before exiting
-            return EXIT_FAILURE;
-        }
-
-        // Display the current state based on the received data
-        display_state(msg);
-
-        // Reply to the message
-        if (MsgReply(rcvid, EOK, NULL, 0) == -1) {
-            perror("Message reply failed");
-        }
-
-        // Exit the loop if the system is shutting down
-        if (msg.person.state == SYSTEM_EXIT_STATE) {
-            break;
-        }
+//        rcvid = MsgReceive(chid, &msg, sizeof(msg), NULL);
+//        if (rcvid == -1) {
+//            perror("Message receive failed");
+//            ChannelDestroy(chid);  // Clean up before exiting
+//            return EXIT_FAILURE;
+//        }
+//
+//        // Display the current state based on the received data
+//        display_state(msg);
+//
+//        // Reply to the message
+//        if (MsgReply(rcvid, EOK, NULL, 0) == -1) {
+//            perror("Message reply failed");
+//        }
+//
+//        // Exit the loop if the system is shutting down
+//        if (msg.person.state == SYSTEM_EXIT_STATE) {
+//            break;
+//        }
     }
 
     // Phase III: Clean up the channel
-    ChannelDestroy(chid);
+   // ChannelDestroy(chid);
     return EXIT_SUCCESS;
 }
 

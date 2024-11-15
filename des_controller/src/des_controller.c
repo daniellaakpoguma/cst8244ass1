@@ -56,7 +56,7 @@ State handler_init(Person *p, State current_state) {
 //			// printf("Person ID not found. Entering lock-down state.\n");
 //			return LOCK_DOWN_STATE;
 //		} else {
-			printf("Moving to Door Scan state");
+			printf("Moving to Door Scan state\n");
 			return DOOR_SCAN_STATE;
 		//}
 	}
@@ -143,15 +143,13 @@ int main(int argc, char *argv[]) {
 	int rcvid;      // indicates who we should reply to
 	int chid;       // the channel ID
 	Person person;  // Message of type Person struct
-	Display ctr; 	// Display structure for displaying current state
+	// Display ctr; 	// Display structure for displaying current state
+
+	client_send_t request;
+	server_response_t response;
+	response.status_code = 200;  // Success
 
 	// create a channel --- Phase I
-//	chid = ChannelCreate(0);
-//	if (chid == -1) {
-//		perror("failed to create the channel.");
-//		exit(EXIT_FAILURE);
-//	}
-
 	printf("Creating channel...\n");
 	chid = ChannelCreate(0);
 	if (chid == -1) {
@@ -166,84 +164,83 @@ int main(int argc, char *argv[]) {
 	while (1) {
 
 		// receive inputs from des_input containing data and the status
+		printf("Waiting for messages on channel ID: %d...\n", chid);
 //		rcvid = MsgReceive(chid, &person, sizeof(Person), NULL);
 //		if (rcvid == -1) {
-//			perror("MsgReceive failed");
-//			continue;  // Skip to the next iteration if MsgReceive fails
+//		    perror("MsgReceive failed");
+//		    printf("Error code: %d\n", errno);
+//		    continue;
 //		}
 
-		printf("Waiting for messages on channel ID: %d...\n", chid);
-		rcvid = MsgReceive(chid, &person, sizeof(Person), NULL);
+		rcvid = MsgReceive(chid, &request, sizeof(request), NULL);
 		if (rcvid == -1) {
-		    perror("MsgReceive failed");
-		    printf("Error code: %d\n", errno);
-		    continue;
+			perror("Failed to receive message.");
+			continue;
 		}
 		printf("Message received. rcvid: %d, Person ID: %d, Event: %d, State: %d\n",
-		       rcvid, person.person_id, person.event, person.state);
+		       rcvid, request.person.person_id, request.person.event, request.person.state);
 
+		response.person = request.person;
 
-		if (person.state < 0 || person.state >= NUM_STATES) {
-		    printf("ERROR: Unknown state received: %d\n", person.state);
-		    break;  // Exit the loop if state is invalid
-		}
+//		if (person.state < 0 || person.state >= NUM_STATES) {
+//		    printf("ERROR: Unknown state received: %d\n", person.state);
+//		    break;  // Exit the loop if state is invalid
+//		}
 
 		// Assign the updated person state to the display structure
-		 ctr.person = person;
+		// ctr.person = person;
 
 		// Check state and pass to appropriate state handler function
-		//while (person.state != SYSTEM_EXIT_STATE) {
-			switch (person.state) {
+			switch (response.person.state) {
 			case INIT_STATE:
-				person.state = state_handlers[INIT_STATE](&person,
-						person.state);
+				response.person.state = state_handlers[INIT_STATE](&response.person,
+						response.person.state);
 				break;
 			case DOOR_SCAN_STATE:
-				person.state = state_handlers[DOOR_SCAN_STATE](&person,
-						person.state);
+				response.person.state = state_handlers[DOOR_SCAN_STATE](&response.person,
+						response.person.state);
 				break;
 			case DOOR_UNLOCKED_STATE:
-				person.state = state_handlers[DOOR_UNLOCKED_STATE](&person,
-						person.state);
+				response.person.state = state_handlers[DOOR_UNLOCKED_STATE](&response.person,
+						response.person.state);
 				break;
 			case DOOR_OPEN_STATE:
-				person.state = state_handlers[DOOR_OPEN_STATE](&person,
-						person.state);
+				response.person.state = state_handlers[DOOR_OPEN_STATE](&response.person,
+						response.person.state);
 				break;
 			case WEIGHT_CHECK_STATE:
-				person.state = state_handlers[WEIGHT_CHECK_STATE](&person,
-						person.state);
+				response.person.state = state_handlers[WEIGHT_CHECK_STATE](&response.person,
+						response.person.state);
 				break;
 			case DOOR_CLOSE_STATE:
-				person.state = state_handlers[DOOR_CLOSE_STATE](&person,
-						person.state);
+				response.person.state = state_handlers[DOOR_CLOSE_STATE](&response.person,
+						response.person.state);
 				break;
 			case DOOR_LOCKED_STATE:
-				person.state = state_handlers[DOOR_LOCKED_STATE](&person,
-						person.state);
+				response.person.state = state_handlers[DOOR_LOCKED_STATE](&response.person,
+						response.person.state);
 				break;
 			case SYSTEM_EXIT_STATE:
-				person.state = SYSTEM_EXIT_STATE;
+				response.person.state = SYSTEM_EXIT_STATE;
 				break;
 			//default:
 				//fprintf(stderr, "Unknown state received: %d\n", person.state);
 				//break;
 			}
-			 printf("State: %d\n", person.state);
+			 printf(" Updated State: %d\n", response.person.state);
 
-		//}
 			// send message to display
 			// check for exit condition
 			// state. When an exit condition is met, the state handler should return the function pointer for the next state handler
 
-		if (MsgReply(rcvid, EOK, &person, sizeof(person)) == -1) {
+
+		if (MsgReply(rcvid, EOK, &response, sizeof(response))) {
 		    perror("MsgReply failed");
-		    continue;
+		    break;
 		}else{
 			printf("Reply sent successfully\n");
-			printf("Reply sent: ID=%d, Event=%d, State=%d\n", person.person_id, person.event, person.state);
+			printf("Reply sent: ID=%d, Event=%d, State=%d\n", response.person.person_id, response.person.event, response.person.state);
 		}
-
 
 	}
 	ChannelDestroy(chid);
