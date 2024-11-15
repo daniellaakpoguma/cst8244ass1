@@ -142,7 +142,6 @@ int main(int argc, char *argv[]) {
 
 	int rcvid;      // indicates who we should reply to
 	int chid;       // the channel ID
-	Person person;  // Message of type Person struct
 	// Display ctr; 	// Display structure for displaying current state
 
 	client_send_t request;

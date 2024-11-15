@@ -33,7 +33,6 @@ void get_weight(Person *p) {
 
 
 int main(int argc, char *argv[]) {
-    Person p;
     Display ctr;
 
     if (argc != 2) {
@@ -71,37 +70,37 @@ int main(int argc, char *argv[]) {
 
 //        // Convert user input to an event code
         if (strcmp(userInput, "ls") == 0) {
-            p.event = LEFT_SCAN_EVT;
-            get_person_id(&p);
-            printf("Event: %d\n", p.event);
-            printf("State: %d\n", p.state);
+        	request.person.event = LEFT_SCAN_EVT;
+            get_person_id(&request.person);
+            printf("Event: %d\n", request.person.event);
+            printf("State: %d\n", request.person.state);
         } else if (strcmp(userInput, "ws") == 0) {
-            p.event = WEIGHT_CHECK_EVT;
-            get_weight(&p);  // prompt for the weight
+        	request.person.event = WEIGHT_CHECK_EVT;
+            get_weight(&request.person);  // prompt for the weight
         } else if (strcmp(userInput, "lo") == 0) {
-            p.event = LEFT_DOOR_OPEN_EVT;
+        	request.person.event = LEFT_DOOR_OPEN_EVT;
         } else if (strcmp(userInput, "lc") == 0) {
-            p.event = LEFT_DOOR_CLOSE_EVT;
+        	request.person.event = LEFT_DOOR_CLOSE_EVT;
         } else if (strcmp(userInput, "glu") == 0) {
-            p.event = GUARD_LEFT_UNLOCK_EVT;
+        	request.person.event = GUARD_LEFT_UNLOCK_EVT;
         } else if (strcmp(userInput, "gll") == 0) {
-            p.event = GUARD_LEFT_LOCK_EVT;
+        	request.person.event = GUARD_LEFT_LOCK_EVT;
         } else if (strcmp(userInput, "gru") == 0) {
-            p.event = GUARD_RIGHT_UNLOCK_EVT;
+        	request.person.event = GUARD_RIGHT_UNLOCK_EVT;
         } else if (strcmp(userInput, "grl") == 0) {
-            p.event = GUARD_RIGHT_LOCK_EVT;
+        	request.person.event = GUARD_RIGHT_LOCK_EVT;
         } else if (strcmp(userInput, "rs") == 0) {
-            p.event = RIGHT_SCAN_EVT;
+        	request.person.event = RIGHT_SCAN_EVT;
         } else if (strcmp(userInput, "ro") == 0) {
-            p.event = RIGHT_DOOR_OPEN_EVT;
+        	request.person.event = RIGHT_DOOR_OPEN_EVT;
         } else if (strcmp(userInput, "rc") == 0) {
-            p.event = RIGHT_DOOR_CLOSE_EVT;
+        	request.person.event = RIGHT_DOOR_CLOSE_EVT;
         } else if (strcmp(userInput, "exit") == 0) {
-              p.event = EXIT_EVT;
+        	request.person.event = EXIT_EVT;
               printf("Exiting...\n");
               break;
         } else if (strcmp(userInput, "lock") == 0) {
-            p.event = LOCK_DOWN_EVT;
+        	request.person.event = LOCK_DOWN_EVT;
         }
 
         // Send the updated Person struct to the controller
@@ -114,11 +113,6 @@ int main(int argc, char *argv[]) {
 
     	// Receive Reply
         printf("Reply received: ID=%d, Event=%d, State=%d\n", response.person.person_id, response.person.event, response.person.state);
-
-
-        //printf("Reply received: ID=%d, Event=%d, State=%d\n", p.person_id, p.event, p.state);
-        // Check and display the controller's response
-
 
     }
 
