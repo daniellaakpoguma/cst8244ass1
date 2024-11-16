@@ -19,8 +19,8 @@ typedef enum {
 	WEIGHT_CHECK_STATE = 4,   // Weight check state
     DOOR_CLOSE_STATE = 5,     // Door closed state
     DOOR_LOCKED_STATE = 6,    // Guard lock door state
-	SYSTEM_EXIT_STATE = 7,   // Exit state
-	LOCK_DOWN_STATE = 8, 	// Lock-down state
+	LOCK_DOWN_STATE = 7, 	// Lock-down state
+	SYSTEM_EXIT_STATE = 8,   // Exit state
 } State;
 
 
@@ -97,6 +97,7 @@ typedef struct {
     int weight;        // Person's weight
     int state;         // Person's current state
     Input event;
+    Input previous_event;
 } Person;
 
 // Display struct for storing output messages and the associated person
@@ -105,19 +106,17 @@ typedef struct {
     Person person;     // Person's information
 } Display;
 
-
 typedef struct {
     Person person;  // The person data that is sent from the client
-    // int request_type;  // Additional field (e.g., request type identifier)
 } client_send_t;
 
 typedef struct {
     Person person;  // The person data that is sent from the server
     int status_code;  // Status code to indicate success or error
-    //char message[128];  // Optional message or error description
 } server_response_t;
 
-
-void current_state(Display ctr);
+// Define the shared memory name
+#define SHARED_MEM_NAME "/shared_display_mem"
+#define SHARED_MEM_SIZE sizeof(Display)
 
 #endif  /* DES_H_ */

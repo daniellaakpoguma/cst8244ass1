@@ -33,7 +33,6 @@ void get_weight(Person *p) {
 
 
 int main(int argc, char *argv[]) {
-    Display ctr;
 
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <server_pid>\n", argv[0]);
@@ -56,6 +55,7 @@ int main(int argc, char *argv[]) {
     request.person.weight = 0;
 	request.person.event = 0;
 	request.person.state = INIT_STATE;
+	request.person.previous_event = 0;
 
     char userInput[20];
 
@@ -67,15 +67,20 @@ int main(int argc, char *argv[]) {
                        "ro=right open, lc=left closed, rc=right closed, gru=guard right unlock, "
                        "grl=guard right lock, gll=guard left lock, glu=guard left unlock): ");
         fflush(stdout);
-        scanf("%s", userInput);
+
+        // Get input using fgets, safer than scanf
+		if (fgets(userInput, sizeof(userInput), stdin) != NULL) {
+			// Remove newline character if fgets reads it
+			userInput[strcspn(userInput, "\n")] = 0; // Strip newline from input
+
+			// Process the input
+			printf("You entered: %s\n", userInput);
+		}
 
 //        // Convert user input to an event code
         if (strcmp(userInput, "ls") == 0) {
         	request.person.event = LEFT_SCAN_EVT;
             get_person_id(&request.person);
-            printf("Event: %d\n", request.person.event);
-            printf("State: %d\n", request.person.state);
-            fflush(stdout);
         } else if (strcmp(userInput, "ws") == 0) {
         	request.person.event = WEIGHT_CHECK_EVT;
             get_weight(&request.person);  // prompt for the weight
@@ -93,6 +98,7 @@ int main(int argc, char *argv[]) {
         	request.person.event = GUARD_RIGHT_LOCK_EVT;
         } else if (strcmp(userInput, "rs") == 0) {
         	request.person.event = RIGHT_SCAN_EVT;
+        	get_person_id(&request.person);
         } else if (strcmp(userInput, "ro") == 0) {
         	request.person.event = RIGHT_DOOR_OPEN_EVT;
         } else if (strcmp(userInput, "rc") == 0) {
@@ -103,6 +109,8 @@ int main(int argc, char *argv[]) {
             break;
         } else if (strcmp(userInput, "lock") == 0) {
         	request.person.event = LOCK_DOWN_EVT;
+        } else {
+        	continue; // Skip sending the message
         }
 
         // Send the updated Person struct to the controller
@@ -115,7 +123,15 @@ int main(int argc, char *argv[]) {
 
     	// Receive Reply
         printf("Reply received: ID=%d, Event=%d, State=%d\n", response.person.person_id, response.person.event, response.person.state);
-        printf("After receiving response, prompting again...\n");
+
+        if (response.status_code == 200){
+            // Set the previous_event field to the current event
+            request.person.previous_event = request.person.event;
+            request.person.person_id = response.person.person_id;
+            request.person.weight = response.person.weight;
+            request.person.event = response.person.event;
+            request.person.state = response.person.state;
+        }
         fflush(stdout);
 
     }
